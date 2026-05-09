@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -49,12 +50,8 @@ fun RickAndMortyApp() {
         composable("list") {
             ListScreen(
                 uiState = listUiState,
-                onSearchQueryChange = { query ->
-                    listViewModel.updateSearchQuery(query)
-                },
-                onCharacterClick = { characterId ->
-                    navController.navigate("detail/$characterId")
-                },
+                onSearchQueryChange = { query -> listViewModel.updateSearchQuery(query) },
+                onCharacterClick = { characterId -> navController.navigate("detail/$characterId") },
                 onRetry = { listViewModel.retry() },
                 onLoadNextPage = { listViewModel.loadNextPage() }
             )
@@ -67,17 +64,22 @@ fun RickAndMortyApp() {
             )
         ) { backStackEntry ->
             val characterId = backStackEntry.arguments?.getInt("characterId") ?: 0
-            val detailViewModel: CharacterDetailViewModel = hiltViewModel()
 
-            androidx.compose.runtime.LaunchedEffect(characterId) {
-                detailViewModel.loadCharacter(characterId)
+            if (characterId > 0) {
+                val detailViewModel: CharacterDetailViewModel = hiltViewModel()
+                LaunchedEffect(characterId) {
+                    detailViewModel.loadCharacter(characterId)
+                }
+
+                DetailScreen(
+                    uiState = detailViewModel.uiState,
+                    onRetry = { detailViewModel.retry() },
+                    onBack = { navController.popBackStack() }
+                )
+            } else {
+                // Невалидный ID - возвращаемся назад
+                navController.popBackStack()
             }
-
-            DetailScreen(
-                uiState = detailViewModel.uiState,
-                onRetry = { detailViewModel.retry() },
-                onBack = { navController.popBackStack() }
-            )
         }
     }
 }

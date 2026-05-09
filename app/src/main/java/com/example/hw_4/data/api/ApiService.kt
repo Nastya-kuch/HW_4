@@ -19,6 +19,8 @@ interface ApiService {
     suspend fun getCharacterById(
         @Path("id") id: Int
     ): CharacterResponseSingle
+
+    
 }
 
 data class CharacterResponse(

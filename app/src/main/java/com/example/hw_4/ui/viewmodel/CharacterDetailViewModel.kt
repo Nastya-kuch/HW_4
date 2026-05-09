@@ -21,13 +21,15 @@ data class CharacterDetailUiState(
 @HiltViewModel
 class CharacterDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: CharacterRepository
-) : ViewModel() {
+    private val repository: CharacterRepository,
 
+) : ViewModel() {
+    private var lastLoadedId: Int? = null
     var uiState by mutableStateOf(CharacterDetailUiState(isLoading = true))
         private set
 
     fun loadCharacter(characterId: Int) {
+        lastLoadedId = characterId
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true, errorMessage = null)
 
@@ -47,7 +49,7 @@ class CharacterDetailViewModel @Inject constructor(
     }
 
     fun retry() {
-        val id = savedStateHandle.get<Int>("characterId") ?: return
+        val id = lastLoadedId ?: return
         loadCharacter(id)
     }
 }

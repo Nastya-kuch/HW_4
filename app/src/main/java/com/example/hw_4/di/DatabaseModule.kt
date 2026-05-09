@@ -1,6 +1,7 @@
 package com.example.hw_4.di
 
 import android.content.Context
+import androidx.room.Room
 import com.example.hw_4.data.local.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -18,6 +19,16 @@ object DatabaseModule {
     fun provideAppDatabase(
         @ApplicationContext context: Context
     ): AppDatabase {
-        return AppDatabase.getInstance(context)
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "app_database"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideCharacterDao(database: AppDatabase) = database.characterDao()
 }

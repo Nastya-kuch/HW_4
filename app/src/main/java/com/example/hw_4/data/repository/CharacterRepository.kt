@@ -30,20 +30,21 @@ class CharacterRepository @Inject constructor(
     }
 
     suspend fun searchCharacters(query: String): List<Character> = withContext(Dispatchers.IO) {
-        val response = apiService.searchCharacters(name = query)
-        response.results.map { item ->
-            Character(
-                id = item.id,
-                name = item.name,
-                status = item.status,
-                species = item.species,
-                type = item.type,
-                gender = item.gender,
-                origin = item.origin.name,
-                location = item.location.name,
-                episodeCount = item.episode.size
-            )
-        }
+            val response = apiService.searchCharacters(name = query)
+            response.results.map { item ->
+                Character(
+                    id = item.id,
+                    name = item.name,
+                    status = item.status,
+                    species = item.species,
+                    type = item.type,
+                    gender = item.gender,
+                    origin = item.origin.name,
+                    location = item.location.name,
+                    episodeCount = item.episode.size
+                )
+            }
+
     }
 
     suspend fun getPagesInfo(): PageInfo = withContext(Dispatchers.IO) {
